@@ -1,0 +1,23 @@
+name: Pull Request
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    name: Build and Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.3'
+          bundler-cache: true
+      - name: Test
+        run: bundle exec rspec
+      - name: Notify
+        run: ruby sample/run.rb --build
+        env:
+          APIALERTS_API_KEY: ${{ secrets.APIALERTS_API_KEY }}
