@@ -1,0 +1,23 @@
+name: Publish to RubyGems
+
+on:
+  release:
+    types: [created]
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.3'
+          bundler-cache: true
+      - run: bundle exec rspec
+      - uses: rubygems/release-gem@v1
+        with:
+          api-key: ${{ secrets.RUBYGEMS_API_KEY }}
+      - name: Notify
+        run: ruby sample/run.rb --publish
+        env:
+          APIALERTS_API_KEY: ${{ secrets.APIALERTS_API_KEY }}
