@@ -5,7 +5,8 @@ on:
     types: [created]
 
 jobs:
-  publish:
+  build:
+    name: Build and Test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
@@ -14,10 +15,42 @@ jobs:
           ruby-version: '3.3'
           bundler-cache: true
       - run: bundle exec rspec
+      - run: ruby sample/run.rb --release
+        env:
+          APIALERTS_API_KEY: ${{ secrets.APIALERTS_API_KEY }}
+
+  publish-alpha:
+    name: Publish Alpha
+    needs: build
+    if: github.event.release.prerelease == true
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.3'
+          bundler-cache: true
       - uses: rubygems/release-gem@v1
         with:
           api-key: ${{ secrets.RUBYGEMS_API_KEY }}
-      - name: Notify
-        run: ruby sample/run.rb --publish
+      - run: ruby sample/run.rb --publish
+        env:
+          APIALERTS_API_KEY: ${{ secrets.APIALERTS_API_KEY }}
+
+  publish-release:
+    name: Publish Release
+    needs: build
+    if: github.event.release.prerelease == false
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.3'
+          bundler-cache: true
+      - uses: rubygems/release-gem@v1
+        with:
+          api-key: ${{ secrets.RUBYGEMS_API_KEY }}
+      - run: ruby sample/run.rb --publish
         env:
           APIALERTS_API_KEY: ${{ secrets.APIALERTS_API_KEY }}

@@ -1,4 +1,4 @@
 module ApiAlerts
-  VERSION = '1.0.0'
+  VERSION = '1.0.0.alpha.1'
   INTEGRATION_NAME = 'ruby'
 end
