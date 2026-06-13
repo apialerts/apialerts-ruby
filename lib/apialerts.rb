@@ -10,8 +10,8 @@ require_relative 'apialerts/client'
 module ApiAlerts
   class << self
     # Initialise the global client. Subsequent calls are no-ops.
-    def configure(api_key, debug: false, http: nil)
-      @client ||= Client.new(api_key, debug: debug, http: http)
+    def configure(api_key, debug: false)
+      @client ||= Client.new(api_key, debug: debug)
     end
 
     # Override the integration name, version, and base URL on the global client.
@@ -20,26 +20,25 @@ module ApiAlerts
       @client&.set_overrides(integration, version, base_url)
     end
 
-    # Send an event — fire-and-forget. Never raises.
+    # Send an event - fire-and-forget. Never raises.
     # Silently does nothing if the global client has not been initialised.
-    def send(event)
+    def send(event, api_key: nil)
       unless @client
-        warn "x (apialerts.com) Error: client not configured"
+        warn 'x (apialerts.com) Error: client not configured'
         return
       end
-      @client.send(event)
+      @client.send(event, api_key: api_key)
     end
 
     # Send an event and return a SendResult. Never raises.
     # Returns SendResult with success: false if not configured.
-    def send_async(event)
-      unless @client
-        return SendResult.new(success: false, error: 'client not configured')
-      end
-      @client.send_async(event)
+    def send_async(event, api_key: nil)
+      return SendResult.new(success: false, error: 'client not configured') unless @client
+
+      @client.send_async(event, api_key: api_key)
     end
 
-    # @private — for use in tests only
+    # @private - for use in tests only
     def reset!
       @client = nil
     end

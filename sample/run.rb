@@ -9,7 +9,7 @@ integration_tests = ARGV.include?('--integration-tests')
 channel_idx = ARGV.index('--channel')
 channel = channel_idx ? ARGV[channel_idx + 1] || 'testing' : 'testing'
 
-api_key = ENV['APIALERTS_API_KEY']
+api_key = ENV.fetch('APIALERTS_API_KEY', nil)
 if api_key.nil? || api_key.empty?
   warn 'Error: APIALERTS_API_KEY environment variable is not set'
   exit 1
@@ -23,10 +23,11 @@ if build
   result = ApiAlerts.send_async(ApiAlerts::Event.new(
     message: 'Ruby SDK - PR build success',
     channel: 'developer',
-    event:   'ci.build',
-    title:   'Build Passed',
-    tags:    ['CI/CD', 'Ruby', 'Build'],
-    link:    link,
+    event: 'ci.build',
+    title: 'Build Passed',
+    tags: ['CI/CD', 'Ruby', 'Build'],
+    link: link,
+    data: { integration: 'ruby' }
   ))
   unless result.success?
     warn "Error: #{result.error}"
@@ -38,10 +39,11 @@ elsif release
   result = ApiAlerts.send_async(ApiAlerts::Event.new(
     message: 'Ruby SDK - Build for publish success',
     channel: 'developer',
-    event:   'ci.release',
-    title:   'Release Build Passed',
-    tags:    ['CI/CD', 'Ruby', 'Build'],
-    link:    link,
+    event: 'ci.release',
+    title: 'Release Build Passed',
+    tags: ['CI/CD', 'Ruby', 'Build'],
+    link: link,
+    data: { integration: 'ruby' }
   ))
   unless result.success?
     warn "Error: #{result.error}"
@@ -53,10 +55,11 @@ elsif publish
   result = ApiAlerts.send_async(ApiAlerts::Event.new(
     message: 'Ruby SDK - RubyGems publish success',
     channel: 'releases',
-    event:   'ci.publish',
-    title:   'Published',
-    tags:    ['CI/CD', 'Ruby', 'Deploy'],
-    link:    link,
+    event: 'ci.publish',
+    title: 'Published',
+    tags: ['CI/CD', 'Ruby', 'Deploy'],
+    link: link,
+    data: { integration: 'ruby' }
   ))
   unless result.success?
     warn "Error: #{result.error}"
@@ -75,11 +78,11 @@ elsif integration_tests
   r2 = ApiAlerts.send_async(ApiAlerts::Event.new(
     message: 'Ruby SDK - full',
     channel: channel,
-    event:   'sdk.test',
-    title:   'Integration Test',
-    tags:    ['CI/CD', 'Ruby'],
-    link:    link,
-    data:    { version: '2.0.0' },
+    event: 'sdk.test',
+    title: 'Integration Test',
+    tags: ['CI/CD', 'Ruby'],
+    link: link,
+    data: { integration: 'ruby' }
   ))
   unless r2.success?
     warn "Error (full): #{r2.error}"

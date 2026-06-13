@@ -1,0 +1,36 @@
+AllCops:
+  TargetRubyVersion: 3.0
+  NewCops: enable
+  SuggestExtensions: false
+
+Layout/LineLength:
+  Max: 120
+
+# Allow the aligned-assignment and aligned-hash style used throughout.
+Layout/ExtraSpacing:
+  AllowForAlignment: true
+
+# Indent continuation args a fixed two spaces instead of aligning to the open
+# paren, which over-indents nested calls like send_async(Event.new(...)).
+Layout/ArgumentAlignment:
+  EnforcedStyle: with_fixed_indentation
+
+Layout/FirstArgumentIndentation:
+  EnforcedStyle: consistent
+
+Metrics:
+  Enabled: false
+
+Style/Documentation:
+  Enabled: false
+
+Style/FrozenStringLiteralComment:
+  Enabled: false
+
+# Keep dev dependencies in the gemspec (existing convention for this gem).
+Gemspec/DevelopmentDependencies:
+  Enabled: false
+
+# @client is the right name for the memoized client; the method is `configure`.
+Naming/MemoizedInstanceVariableName:
+  Enabled: false

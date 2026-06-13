@@ -13,6 +13,7 @@ Gem::Specification.new do |spec|
   spec.metadata = {
     'source_code_uri' => 'https://github.com/apialerts/apialerts-ruby',
     'bug_tracker_uri' => 'https://github.com/apialerts/apialerts-ruby/issues',
+    'rubygems_mfa_required' => 'true'
   }
 
   spec.required_ruby_version = '>= 3.0.0'
@@ -21,5 +22,6 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'net-http', '>= 0.3'
 
   spec.add_development_dependency 'rspec', '~> 3.13'
+  spec.add_development_dependency 'rubocop', '~> 1.65'
   spec.add_development_dependency 'webmock', '~> 3.23'
 end

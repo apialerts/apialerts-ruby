@@ -39,7 +39,7 @@ require 'apialerts'
 
 ApiAlerts.configure('your-api-key')
 
-# Fire-and-forget — never raises
+# Fire-and-forget - never raises
 ApiAlerts.send(ApiAlerts::Event.new(message: 'Deploy complete'))
 
 # Or get the result back
@@ -62,7 +62,7 @@ Only `message` is required. All other fields are optional.
 | `event`   | `String` | No       | Event key for routing            |
 | `title`   | `String` | No       | Short title                      |
 | `tags`    | `Array`  | No       | Categorisation tags              |
-| `link`    | `String` | No       | URL attached to the notification |
+| `link`    | `String` | No       | URL associated with the event (deeplink + CTA) |
 | `data`    | `Hash`   | No       | Arbitrary key-value metadata     |
 
 ```ruby
@@ -77,24 +77,19 @@ event = ApiAlerts::Event.new(
 )
 ```
 
-### Instance-based client
+### Send to a different workspace
 
-Use `ApiAlerts::Client` directly when you need multiple clients or full
-lifecycle control.
+Pass an optional `api_key:` to override the configured key for a single call.
 
 ```ruby
-client = ApiAlerts::Client.new('your-api-key', debug: true)
-result = client.send_async(ApiAlerts::Event.new(message: 'Deploy complete'))
-if result.success?
-  puts "Sent to #{result.workspace} (#{result.channel})"
-else
-  puts "Error: #{result.error}"
-end
+ApiAlerts.send(event, api_key: 'other-workspace-key')
+
+result = ApiAlerts.send_async(event, api_key: 'other-workspace-key')
 ```
 
 ### SendResult fields
 
-`send_async` always returns a `SendResult` — it never raises.
+`send_async` always returns a `SendResult` - it never raises.
 
 | Field       | Type      | Description                                    |
 |-------------|-----------|------------------------------------------------|
