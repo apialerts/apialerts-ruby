@@ -1,0 +1,73 @@
+name: Publish to RubyGems
+
+on:
+  release:
+    types: [created]
+
+jobs:
+  build:
+    name: Build and Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.3'
+          bundler-cache: true
+      - name: Lint
+        run: bundle exec rubocop
+      - name: Test
+        run: bundle exec rspec
+      - name: Notify
+        run: ruby sample/run.rb --release
+        env:
+          APIALERTS_API_KEY: ${{ secrets.APIALERTS_API_KEY }}
+
+  publish-alpha:
+    name: Publish Alpha
+    needs: build
+    if: github.event.release.prerelease == true
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/checkout@v6
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.3'
+          bundler-cache: true
+      # Exchanges the GitHub OIDC token for short-lived RubyGems credentials.
+      # The tag already exists (created by the GitHub Release), so we build and
+      # push the gem directly rather than `rake release`.
+      - uses: rubygems/configure-rubygems-credentials@v2.1.0
+      - name: Build and push
+        run: |
+          gem build apialerts.gemspec
+          gem push apialerts-*.gem
+      - name: Notify
+        run: ruby sample/run.rb --publish
+        env:
+          APIALERTS_API_KEY: ${{ secrets.APIALERTS_API_KEY }}
+
+  publish-release:
+    name: Publish Release
+    needs: build
+    if: github.event.release.prerelease == false
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/checkout@v6
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.3'
+          bundler-cache: true
+      - uses: rubygems/configure-rubygems-credentials@v2.1.0
+      - name: Build and push
+        run: |
+          gem build apialerts.gemspec
+          gem push apialerts-*.gem
+      - name: Notify
+        run: ruby sample/run.rb --publish
+        env:
+          APIALERTS_API_KEY: ${{ secrets.APIALERTS_API_KEY }}
