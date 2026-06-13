@@ -16,10 +16,8 @@ Gem::Specification.new do |spec|
     'rubygems_mfa_required' => 'true'
   }
 
-  spec.required_ruby_version = '>= 3.0.0'
+  spec.required_ruby_version = '>= 3.3.0'
   spec.files = Dir['lib/**/*.rb', 'LICENSE', 'README.md']
-
-  spec.add_dependency 'net-http', '>= 0.3'
 
   spec.add_development_dependency 'rspec', '~> 3.13'
   spec.add_development_dependency 'rubocop', '~> 1.65'

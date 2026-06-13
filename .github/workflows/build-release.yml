@@ -7,19 +7,24 @@ on:
 
 jobs:
   build:
-    name: Build and Test
+    name: Build and Test (Ruby ${{ matrix.ruby }})
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        ruby: ['3.3', '4.0']
     steps:
       - uses: actions/checkout@v6
       - uses: ruby/setup-ruby@v1
         with:
-          ruby-version: '3.3'
+          ruby-version: ${{ matrix.ruby }}
           bundler-cache: true
       - name: Lint
+        if: matrix.ruby == '4.0'
         run: bundle exec rubocop
       - name: Test
         run: bundle exec rspec
       - name: Notify
+        if: matrix.ruby == '4.0'
         run: ruby sample/run.rb --release
         env:
           APIALERTS_API_KEY: ${{ secrets.APIALERTS_API_KEY }}

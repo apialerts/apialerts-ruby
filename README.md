@@ -73,7 +73,7 @@ event = ApiAlerts::Event.new(
   title:   'Deployed',
   tags:    ['CI/CD', 'Ruby'],
   link:    'https://github.com/apialerts/apialerts-ruby/actions',
-  data:    { version: '2.0.0' }
+  data:    { commit: 'a1b2c3d' }
 )
 ```
 
@@ -85,6 +85,18 @@ Pass an optional `api_key:` to override the configured key for a single call.
 ApiAlerts.send(event, api_key: 'other-workspace-key')
 
 result = ApiAlerts.send_async(event, api_key: 'other-workspace-key')
+```
+
+### Instance client
+
+Construct `ApiAlerts::Client` directly when you need multiple clients (for example one per workspace) or prefer dependency injection over the global singleton. It exposes the same `send` / `send_async` methods.
+
+```ruby
+client = ApiAlerts::Client.new('your-api-key')
+
+client.send(ApiAlerts::Event.new(message: 'Deploy complete'))
+
+result = client.send_async(ApiAlerts::Event.new(message: 'Deploy complete'))
 ```
 
 ### SendResult fields
